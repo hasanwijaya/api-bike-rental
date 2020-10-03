@@ -11,8 +11,9 @@
 
         $email = $_POST['email'];
         $password = $_POST['password'];
+        $role = $_POST['role'];
 
-        $sql = "SELECT * FROM users WHERE email = '$email'";
+        $sql = "SELECT * FROM users WHERE email = '$email' AND role = '$role'";
         $result = $mysqli->query($sql);
         
         if ($result->num_rows > 0) {
