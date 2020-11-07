@@ -10,18 +10,32 @@
         }
 
         $id = $_POST['id'];
+        
+        $sql = "SELECT image FROM bikes WHERE id = '$id'";
 
-        $sql = "DELETE FROM bikes WHERE id = '$id'";
+        $result = $mysqli->query($sql);
+    
+        if ($result->num_rows > 0) {
+            $bike = $result->fetch_object();
+            unlink('upload/' . $bike->image);
 
-        if ($mysqli->query($sql)) {
-            echo json_encode([
-                "status" => "success",
-                "message" => "hapus sepeda berhasil"
-            ]);
+            $sql = "DELETE FROM bikes WHERE id = '$id'";
+
+            if ($mysqli->query($sql)) {
+                echo json_encode([
+                    "status" => "success",
+                    "message" => "hapus sepeda berhasil"
+                ]);
+            } else {
+                echo json_encode([
+                    "status" => "error",
+                    "message" => $mysqli->error
+                ]);
+            }
         } else {
             echo json_encode([
                 "status" => "error",
-                "message" => $mysqli->error
+                "message" => "tidak ditemukan"
             ]);
         }
 

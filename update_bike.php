@@ -24,21 +24,35 @@
         if ($error == 0) {
             if ($size <= 5000000) {
                 if (($format == 'image/png') || ($format == 'image/jpeg')) {
-                    $fileName = time() . strstr($name, '.');
-                    move_uploaded_file($path, 'upload/' . $fileName);
+                    $sql = "SELECT image FROM bikes WHERE id = '$id'";
 
-                    $sql = "UPDATE bikes SET code = '$code', color = '$color', image = '$fileName', price = '$price', merk = '$merk' WHERE id = '$id'";
-                    if ($mysqli->query($sql)) {
-                        echo json_encode([
-                            "status" => "success",
-                            "message" => "update sepeda berhasil"
-                        ]);
+                    $result = $mysqli->query($sql);
+
+                    if ($result->num_rows > 0) {
+                        $bike = $result->fetch_object();
+                        unlink('upload/' . $bike->image);
+            
+                        $fileName = time() . strstr($name, '.');
+                        move_uploaded_file($path, 'upload/' . $fileName);
+
+                        $sql = "UPDATE bikes SET code = '$code', color = '$color', image = '$fileName', price = '$price', merk = '$merk' WHERE id = '$id'";
+                        if ($mysqli->query($sql)) {
+                            echo json_encode([
+                                "status" => "success",
+                                "message" => "update sepeda berhasil"
+                            ]);
+                        } else {
+                            echo json_encode([
+                                "status" => "error",
+                                "message" => $mysqli->error
+                            ]);
+                        } 
                     } else {
                         echo json_encode([
                             "status" => "error",
-                            "message" => $mysqli->error
+                            "message" => "tidak ditemukan"
                         ]);
-                    } 
+                    }
                 } else {
                     echo json_encode([
                         "status" => "error",
