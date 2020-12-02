@@ -17,13 +17,13 @@
         $result = $mysqli->query($sql);
         
         if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
+            $user = $result->fetch_object();
             
             if (password_verify($password, $row['password'])) {
                 echo json_encode([
                     "status" => "success",
                     "message" => "login berhasil",
-                    "id" => $row['id']
+                    "id" => $user->id
                 ]);
             } else {
                 echo json_encode([
